@@ -1,0 +1,29 @@
+name: my_to_do
+description: A sophisticated To-Do List app with advanced features.
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  provider: ^6.0.0
+  shared_preferences: ^2.2.0
+  flutter_animate: ^4.0.0
+  intl: ^0.18.1
+  google_fonts: ^6.1.0
+  table_calendar: ^3.0.9
+  flutter_svg: ^2.0.7
+  confetti: ^0.7.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/images/background.jpg
