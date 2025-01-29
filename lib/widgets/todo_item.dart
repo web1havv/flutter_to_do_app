@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../models/todo_model.dart';
 import '../providers/todo_provider.dart';
+import '../screens/add_task_screen.dart'; // Add this import
 
 class TodoItem extends StatefulWidget {
   final Todo todo;
@@ -108,11 +109,33 @@ class _TodoItemState extends State<TodoItem>
       leading: _buildPriorityIndicator(),
       title: _buildTitle(),
       subtitle: _buildSubtitle(),
-      trailing: _buildStatusIndicator(),
-      onTap: () => _toggleCompletion(context),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildStatusIndicator(),
+          IconButton(
+            icon: const Icon(Icons.edit, color: Colors.white70),
+            onPressed: () => _editTodo(context),
+          ),
+        ],
+      ),
+      onTap: () => _editTodo(context),
     );
   }
 
+  void _editTodo(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddTaskScreen(
+          isEditing: true,
+          todoToEdit: widget.todo,
+        ),
+      ),
+    );
+  }
+
+  // Rest of the methods remain unchanged
   Widget _buildDismissBackground() {
     return Container(
       decoration: BoxDecoration(

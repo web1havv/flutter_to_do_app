@@ -15,10 +15,12 @@ class TodoProvider with ChangeNotifier {
     'Education'
   ];
   String _currentFilter = 'All';
+  String _priorityFilter = 'All';
 
   List<Todo> get todos => _applyFilter(_todos);
   List<String> get categories => _categories;
   String get currentFilter => _currentFilter;
+  String get currentPriorityFilter => _priorityFilter;
 
   Future<void> loadTodos() async {
     await _loadFromPrefs();
@@ -79,9 +81,11 @@ class TodoProvider with ChangeNotifier {
   void updateTodo(Todo updatedTodo) {
     final index = _todos.indexWhere((t) => t.id == updatedTodo.id);
     if (index != -1) {
-      _todos[index] = updatedTodo;
-      _saveToPrefs();
-      notifyListeners();
+      _todos[index] = updatedTodo; // Should replace existing item
+      _saveToPrefs(); // Must persist changes
+      notifyListeners(); // Crucial for UI updates
+    } else {
+      if (kDebugMode) print('Todo not found: ${updatedTodo.id}');
     }
   }
 
@@ -144,15 +148,9 @@ class TodoProvider with ChangeNotifier {
     }
   }
 
-  // Add these at the end of TodoProvider class, before the last }
-  String _priorityFilter = 'All';
-  String get currentPriorityFilter => _priorityFilter;
-
   List<Todo> _sortByPriority(List<Todo> todos) {
     return List.from(todos)
-      ..sort((a, b) {
-        return b.priority.index.compareTo(a.priority.index);
-      });
+      ..sort((a, b) => b.priority.index.compareTo(a.priority.index));
   }
 
   List<Todo> get sortedTodos {
@@ -165,7 +163,7 @@ class TodoProvider with ChangeNotifier {
     }
 
     if (_priorityFilter != 'All') {
-      Priority selectedPriority = Priority.values
+      final selectedPriority = Priority.values
           .firstWhere((p) => p.toString().split('.').last == _priorityFilter);
       filteredList = filteredList
           .where((todo) => todo.priority == selectedPriority)

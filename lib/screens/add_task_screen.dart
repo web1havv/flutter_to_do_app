@@ -220,26 +220,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     );
   }
 
-  Widget _buildNotesField() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: TextFormField(
-        controller: _notesController,
-        maxLines: 3,
-        decoration: const InputDecoration(
-          labelText: 'Notes (Optional)',
-          alignLabelWithHint: true,
-          prefixIcon: Icon(Icons.note),
-          border: InputBorder.none,
-          contentPadding: EdgeInsets.all(16),
-        ),
-      ),
-    );
-  }
-
   Widget _buildPrioritySelector() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -289,6 +269,26 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     );
   }
 
+  Widget _buildNotesField() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: TextFormField(
+        controller: _notesController,
+        maxLines: 3,
+        decoration: const InputDecoration(
+          labelText: 'Notes (Optional)',
+          alignLabelWithHint: true,
+          prefixIcon: Icon(Icons.note),
+          border: InputBorder.none,
+          contentPadding: EdgeInsets.all(16),
+        ),
+      ),
+    );
+  }
+
   Widget _buildSubmitButton() {
     return ElevatedButton(
       onPressed: _submitForm,
@@ -329,7 +329,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
   void _submitForm() {
     if (_formKey.currentState!.validate() && _selectedCategory != null) {
-      final todo = Todo(
+      final updatedTodo = Todo(
         id: widget.todoToEdit?.id ?? DateTime.now().toString(),
         title: _titleController.text,
         deadline: _selectedDate,
@@ -338,7 +338,15 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         notes: _notesController.text.isNotEmpty ? _notesController.text : null,
         isCompleted: widget.todoToEdit?.isCompleted ?? false,
       );
-      Navigator.pop(context, todo);
+
+      final provider = Provider.of<TodoProvider>(context, listen: false);
+      if (widget.isEditing) {
+        provider.updateTodo(updatedTodo);
+      } else {
+        provider.addTodo(updatedTodo);
+      }
+
+      Navigator.pop(context);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
